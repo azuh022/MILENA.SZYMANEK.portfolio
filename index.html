@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Milena Szymanek - portfolio</title>
+    <style>
+        body,
+        html {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            height: 100%;
+        }
+        
+        .gallery-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+        }
+        
+        .gallery {
+            display: flex;
+            height: 100%;
+            width: 400vw;
+            transition: transform 0.2s ease-out;
+        }
+        
+        .gallery img {
+            height: 100vh;
+            object-fit: cover;
+        }
+        
+        .pies {
+            position: absolute;
+            bottom: 4%;
+            left: 10%;
+            width: auto;
+            height: 174px;
+            z-index: 10;
+        }
+        
+        element {
+            cursor: url('wskaznik.cur'), auto;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="gallery-container">
+        <img src="corgi.gif" class="pies">
+        <div class="gallery">
+            <img src="1.gif" alt="1">
+            <img src="3.gif" alt="3">
+            <img src="4.gif" alt="4">
+            <img src="5.gif" alt="5">
+            <img src="5.5.gif" alt="5">
+            <img src="6.gif" alt="5">
+            <img src="7.gif" alt="5">
+            <img src="last.gif" alt="last">
+            <img src="sciana.png" alt="sciana">
+        </div>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const gallery = document.querySelector('.gallery');
+            let currentOffset = 0;
+            let scrolling = false;
+            let scrollDirection = '';
+            let lastTimestamp = 0;
+
+            function scrollGallery(timestamp) {
+                if (!scrolling) return;
+
+                const scrollStep = 0.3;
+                const maxOffset = 500;
+
+                if (lastTimestamp === 0) lastTimestamp = timestamp;
+                const progress = timestamp - lastTimestamp;
+
+                if (progress > 16) {
+                    if (scrollDirection === 'left' && currentOffset > 0) {
+                        currentOffset = Math.max(0, currentOffset - scrollStep);
+                    } else if (scrollDirection === 'right' && currentOffset < maxOffset) {
+                        currentOffset = Math.min(maxOffset, currentOffset + scrollStep);
+                    }
+                    gallery.style.transform = `translateX(-${currentOffset}vw)`;
+                    lastTimestamp = timestamp;
+                }
+
+                requestAnimationFrame(scrollGallery);
+            }
+
+            function startScrolling(direction) {
+                if (!scrolling) {
+                    scrolling = true;
+                    scrollDirection = direction;
+                    const pies = document.getElementsByClassName("pies")[0];
+                    if (scrollDirection === 'left') {
+                        pies.src = 'corgiskipping.gif';
+                        pies.style.height = '40%';
+                        pies.style.width = 'auto';
+                        setTimeout(() => {
+                            pies.src = 'corgiWalkL.gif';
+                            pies.style.height = '19%';
+                            pies.style.width = 'auto'
+                            requestAnimationFrame(scrollGallery);
+                        }, 500);
+                    } else if (scrollDirection === 'right') {
+                        requestAnimationFrame(scrollGallery);
+                        pies.src = 'corgiWalk2.gif';
+                        pies.style.height = '19%';
+                        pies.style.width = 'auto'
+                    }
+                }
+            }
+
+
+            function stopScrolling() {
+                scrolling = false;
+                lastTimestamp = 0;
+                const pies = document.getElementsByClassName("pies")[0];
+                if (pies.src.endsWith('corgiWalkL.gif')) {
+                    pies.src = 'corgiskippingl.gif';
+                    pies.style.height = '40%';
+                    pies.style.width = 'auto';
+                    setTimeout(() => {
+                        pies.src = 'corgi.gif';
+                        pies.style.height = '19%';
+                        pies.style.width = 'auto'
+                        requestAnimationFrame(scrollGallery);
+                    }, 500);
+                } else {
+                    pies.src = 'corgi.gif';
+                    pies.style.height = '20%';
+                    pies.style.width = 'auto'
+
+                }
+            }
+
+
+            document.addEventListener('mousedown', (event) => {
+                const x = event.clientX;
+                const windowWidth = window.innerWidth;
+
+                if (x < windowWidth / 2) {
+                    startScrolling('left');
+                } else {
+                    startScrolling('right');
+                }
+            });
+
+            document.addEventListener('mouseup', stopScrolling);
+            document.addEventListener('mouseleave', stopScrolling);
+
+            document.addEventListener('click', (event) => {
+                const x = event.clientX;
+                const windowWidth = window.innerWidth;
+
+                if (!scrolling) {
+                    const clickScrollAmount = 5;
+                    if (x < windowWidth / 2) {
+                        currentOffset = Math.max(0, currentOffset - clickScrollAmount);
+                    } else {
+                        currentOffset = Math.min(500, currentOffset + clickScrollAmount);
+                    }
+                    gallery.style.transform = `translateX(-${currentOffset}vw)`;
+                }
+            });
+
+            document.addEventListener('touchstart', (event) => {
+                const touchX = event.touches[0].clientX;
+                const windowWidth = window.innerWidth;
+
+                if (touchX < windowWidth / 2) {
+                    startScrolling('left');
+                } else {
+                    startScrolling('right');
+                }
+            });
+
+            document.addEventListener('touchend', stopScrolling);
+        });
+    </script>
+</body>
+
+</html>
